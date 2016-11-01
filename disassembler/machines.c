@@ -22,6 +22,9 @@ void read_machine_file(const char *machine_name) {
     exit(1);
   }
 
+  /* Read the config file */
+  
+
   switch (cpu) {
   case CPU_6502:
     read_6502_machine(fd);

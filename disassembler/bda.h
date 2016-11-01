@@ -79,6 +79,21 @@ typedef struct OutputItem {
   unsigned short address;
 } OutputItem;
 
+typedef struct CFGItem {
+  char *name;
+  char *line;
+  char **argv;
+  int argc;
+
+  struct CFGItem *next;
+} CFGItem;
+
+typedef struct CFGSection {
+  char *name;
+
+  struct CFGSection *next;
+} CFGSection;
+
 #include "proto.h"
 
 #endif
