@@ -51,6 +51,7 @@
 #define MEM_EMPTY 4
 
 #define MAXSTR 512
+#define MAXLINE 512
 #define MAX_BYTES_PER_LINE 16
 #define MAX_WORDS_PER_LINE 8
 
@@ -59,6 +60,8 @@
 
 #define CONTINUE_CHAR '\\'
 #define EOS '\0'
+
+#define IS_WHITE(c) ((c == ' ') || (c == '\t'))
 
 typedef struct OPcode {
   unsigned char op; /* Number of the opcode */

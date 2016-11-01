@@ -30,6 +30,7 @@ void create_label(char *label, unsigned short addr);
 void process_line(char *line);
 int read_label_file(const char *file_name);
 /* machines.c */
+void parse_line(char *str);
 void read_machine_file(const char *machine_name);
 void create_catbox_labels(void);
 void create_ad_labels(void);
@@ -50,6 +51,9 @@ unsigned short hex2int(char *str, unsigned short dfl);
 unsigned short parse_address(char *str);
 unsigned char is_file(char *path);
 char *trunc_str(char *s, char c);
+char *strip_nl(char *str);
 void ltrim(char *s);
 void rtrim(char *s);
 void trim(char *s);
+char *str_pop(char **str);
+char *skip_blanks(char *str);

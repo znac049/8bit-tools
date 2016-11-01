@@ -1,4 +1,3 @@
-
 [general]
 cpu 6809
 list $8000 $bfff

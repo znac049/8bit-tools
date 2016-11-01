@@ -5,17 +5,45 @@
 
 #include "bda.h"
 
-void read_6502_machine(FILE *fd) {
-}
+void parse_line(char *str) {
+  int argc = 0;
+  char *cp, *arg;
 
-void read_6809_machine(FILE *fd) {
+  printf("PARSE: '%s'\n", str);
+  if (*str == EOS) {
+    return;
+  }
+
+  str = strdup(str);
+  arg = cp = skip_blanks(str);
+
+  while (*arg != EOS) {
+    while (*cp && !(IS_WHITE(*cp))) {
+      cp++;
+    }
+    *cp++ = EOS;
+    argc++;
+
+    printf("ARGV[%d]: '%s'\n", argc, arg);
+
+    arg = cp = skip_blanks(cp);
+  }
+
+  printf("ARGC=%d\n\n", argc);
 }
 
 void read_machine_file(const char *machine_name) {
   char name[MAXSTR];
+  char line[MAXLINE];
   FILE *fd;
+  char *str;
 
   sprintf(name, "machines/%s.mach", machine_name);
+  if (!is_file(name)) {
+    fprintf(stderr, "No machine file found: '%s'\n", name);
+    exit(1);
+  }
+
   fd = fopen(name, "r");
   if (fd == NULL) {
     fprintf(stderr, "No machine file found: '%s'\n", name);
@@ -23,16 +51,16 @@ void read_machine_file(const char *machine_name) {
   }
 
   /* Read the config file */
-  
 
-  switch (cpu) {
-  case CPU_6502:
-    read_6502_machine(fd);
-    break;
+  str = fgets(line, MAXSTR, fd);
+  while (str != NULL) {
+    strip_nl(str);
+    rtrim(str);
 
-  case CPU_6809:
-    read_6809_machine(fd);
-    break;
+    printf("READ: '%s'\n", str);
+    parse_line(str);
+
+    str = fgets(line, MAXLINE, fd);
   }
 
   fclose(fd);

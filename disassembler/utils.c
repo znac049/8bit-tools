@@ -8,8 +8,6 @@
 
 #include "bda.h"
 
-#define IS_WHITE(c) ((c == ' ') || (c == '\t'))
-
 int is_hex_char(char c) {
   c = tolower(c);
 
@@ -94,6 +92,21 @@ char *trunc_str(char *s, char c) {
   return s;
 }
 
+char *strip_nl(char *str) {
+  int len = strlen(str);
+
+  if (str[len-1] == '\n') {
+    str[len-1] = EOS;
+    len--;
+  }
+
+  if (str[len-1] == '\r') {
+    str[len-1] = EOS;
+  }
+
+  return str;
+}
+
 void ltrim(char *s) {
   char *sp = s;
 
@@ -128,4 +141,29 @@ void rtrim(char *s) {
 void trim(char *s) {
   ltrim(s);
   rtrim(s);
+}
+
+char *str_pop(char **str) {
+  char *res = *str;
+  char *cp = res;
+
+  while (*cp) {
+    if (IS_WHITE(*cp)) {
+      *str = cp;
+      return res;
+    }
+
+    cp++;
+  }
+
+  *str = cp;
+  return res;
+}
+
+char *skip_blanks(char *str) {
+  while (IS_WHITE(*str)) {
+    str++;
+  }
+
+  return str;
 }
