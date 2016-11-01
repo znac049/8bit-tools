@@ -1,0 +1,15 @@
+;
+cpu 6809
+;
+ram 0-$7fff
+rom $8000 d32.rom
+;
+reset $bffe
+nmi   $bffc
+swi   $bffa
+irq   $bff8
+firq  $bff6
+swi2  $bff4
+swi3  $bff2
+;
+list $8000 $bfff
