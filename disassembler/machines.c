@@ -5,13 +5,16 @@
 
 #include "bda.h"
 
-void parse_line(char *str) {
+CFGItem *parse_line(char *str) {
   int argc = 0;
   char *cp, *arg;
+  char *argv[MAXARGS];
+  CFGItem *item;
+  int i;
 
   printf("PARSE: '%s'\n", str);
   if (*str == EOS) {
-    return;
+    return NULL;
   }
 
   str = strdup(str);
@@ -22,14 +25,28 @@ void parse_line(char *str) {
       cp++;
     }
     *cp++ = EOS;
+
+    argv[argc] = arg;
+    printf("ARGV[%d]: '%s'\n", argc, argv[argc]);
+
     argc++;
-
-    printf("ARGV[%d]: '%s'\n", argc, arg);
-
     arg = cp = skip_blanks(cp);
   }
 
   printf("ARGC=%d\n\n", argc);
+
+  item = malloc(sizeof(CFGItem));
+  item->next = NULL;
+  item->name = argv[0];
+  item->line = str;
+  item->argv = malloc(sizeof(char *) * (argc-1));
+
+  for (i=1; i<argc; i++) {
+    item->argv[i-1] = argv[i];
+  }
+  item->argc = argc-1;
+
+  return item;
 }
 
 void read_machine_file(const char *machine_name) {
@@ -37,6 +54,7 @@ void read_machine_file(const char *machine_name) {
   char line[MAXLINE];
   FILE *fd;
   char *str;
+  CFGItem *item;
 
   sprintf(name, "machines/%s.mach", machine_name);
   if (!is_file(name)) {
@@ -54,11 +72,20 @@ void read_machine_file(const char *machine_name) {
 
   str = fgets(line, MAXSTR, fd);
   while (str != NULL) {
+    int len;
+
     strip_nl(str);
     rtrim(str);
 
     printf("READ: '%s'\n", str);
-    parse_line(str);
+    len = strlen(str);
+
+    if ((str[0] == '[') && (str[len-1] == ']')) {
+      printf("SECTION NAME: '%s'\n", str);
+    }
+    else {
+      item = parse_line(str);
+    }
 
     str = fgets(line, MAXLINE, fd);
   }

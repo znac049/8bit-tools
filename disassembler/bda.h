@@ -52,6 +52,7 @@
 
 #define MAXSTR 512
 #define MAXLINE 512
+#define MAXARGS 100
 #define MAX_BYTES_PER_LINE 16
 #define MAX_WORDS_PER_LINE 8
 

@@ -30,7 +30,7 @@ void create_label(char *label, unsigned short addr);
 void process_line(char *line);
 int read_label_file(const char *file_name);
 /* machines.c */
-void parse_line(char *str);
+CFGItem *parse_line(char *str);
 void read_machine_file(const char *machine_name);
 void create_catbox_labels(void);
 void create_ad_labels(void);
