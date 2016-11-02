@@ -24,13 +24,10 @@
 char hex_output = NO; /* 1 if hex output is desired at beginning of line */
 int verbose = NO;
 
-int cpu = CPU_6502;
+int cpu = CPU_NONE;
 
-char rom_file[MAXSTR];
+char src_file[MAXSTR];
 char label_file[MAXSTR];
-
-int rom_start = 0x6000;
-int rom_end = 0x67ff;
 
 unsigned char byteStack[MAX_BYTES_PER_LINE];
 int byteSP = 0;
@@ -40,7 +37,7 @@ unsigned short wordStack[MAX_WORDS_PER_LINE];
 int wordSP = 0;
 int wordAddr = 0;
 
-int (*disassemble)();
+int (*disassemble)(int, OutputItem*);
 
 void usage_helper(char *str) {
   fprintf(stderr,"\t%s\n",str);
@@ -48,8 +45,7 @@ void usage_helper(char *str) {
 
 void usage(void) {
   usage_helper("-?      -> Show this help message");
-  usage_helper("-c      -> Specify CPU");
-  usage_helper("-h      -> Get hex info about disassembly");
+  usage_helper("-v      -> Produce verbose output during disassembly");
 
   fprintf(stderr,"\n");
 }
@@ -57,37 +53,21 @@ void usage(void) {
 void parse_args(int argc, char *argv[]) {
   int opt = 0;
   int long_index = 0;
-  int rom_size = 2048;
 
   static struct option long_options[] = {
-    {"cpu",         required_argument, NULL,  'c' },
     {"output-hex",  no_argument,       NULL,  'h' },
     {"label-file",  required_argument, NULL,  'l' },
     {"machine",     required_argument, NULL,  'm' },
-    {"rom-start",   required_argument, NULL,  'b' },
-    {"rom-size",    required_argument, NULL,  's' },
     {"help",        no_argument,       NULL,  '?' },
     {"verbose",     no_argument,       NULL,  'v' },
     {NULL,          0,                 NULL,  0   }
   };
 
-  strcpy(rom_file, "");
+  strcpy(src_file, "");
   strcpy(label_file, "");
 
   while ((opt = getopt_long(argc, argv,"hi:n:r:b:s:v", long_options, &long_index )) != -1) {
     switch (opt) {
-    case 'c':
-      select_cpu(optarg);
-      break;
-
-    case 'b':
-      rom_start = parse_address(optarg);
-      break;
-
-    case 's':
-      rom_size = parse_address(optarg);
-      break;
-
     case 'h':
       hex_output = YES;
       break;
@@ -112,19 +92,11 @@ void parse_args(int argc, char *argv[]) {
   }
 
   dump_cfg();
-  exit(1);
 
   /* There should be just one arg left, the name of the ROM file */
   if ((optind+1) != argc) {
     fprintf(stderr, "ROM file name missing.\n");
     usage();
-    exit(1);
-  }
-
-  rom_end = rom_start + rom_size - 1;
-  if (rom_end > K64) {
-    fprintf(stderr, "Check rom start and size as it appears to go beyond the\n");
-    fprintf(stderr, "end of memory: %04x - %04d\n", rom_start, rom_end);
     exit(1);
   }
 
@@ -136,16 +108,7 @@ void parse_args(int argc, char *argv[]) {
     }
   }
 
-  strncpy(rom_file, argv[argc-1], MAXSTR-1);
-
-  printf("; Command line parsed ok:\n");
-  printf(";   output hex: %s\n", (hex_output==YES)?"YES":"NO");
-  printf(";     rom base: %04x\n", rom_start);
-  printf(";      rom end: %04x\n", rom_end);
-  printf(";      verbose: %s\n", (verbose==YES)?"YES":"NO");
-  printf(";     ROM file: %s\n", rom_file);
-  printf(";   Label file: %s\n", label_file[0]?label_file:"*None*");
-  puts(";\n");
+  strncpy(src_file, argv[argc-1], MAXSTR-1);
 }
 
 void clear_output_item(OutputItem *oi) {
@@ -343,14 +306,15 @@ void generate_listing() {
   int addr;
   int nBytes;
   int prevType = MEM_EMPTY;
+  int org_needed = YES;
 
   if (verbose) {
     dump_memory_info();
   }
 
-  byteAddr = wordAddr = rom_start;
+  byteAddr = wordAddr = 0;
 
-  for (addr = rom_start; addr <= rom_end;) {
+  for (addr = 0; addr < K64;) {
     int memType = get_memory_type(addr);
 
     /* We may have previous items (bytes/words) that haven't been emitted yet */
@@ -370,11 +334,21 @@ void generate_listing() {
 
     switch (memType) {
     case MEM_BYTE:
+      if (org_needed == YES) {
+	printf("                 ORG $%04x\n", addr);
+	org_needed = NO;
+      }
+
       push_byte(get_byte(addr), addr);
       nBytes = 1;
       break;
 
     case MEM_CODE:
+      if (org_needed == YES) {
+	printf("                 ORG $%04x\n", addr);
+	org_needed = NO;
+      }
+
       if (is_entry_point(addr)) {
 	printf("\n");
       }
@@ -385,12 +359,18 @@ void generate_listing() {
       break;
 
     case MEM_WORD:
+      if (org_needed == YES) {
+	printf("                 ORG $%04x\n", addr);
+	org_needed = NO;
+      }
+
       push_word(get_word(addr), addr);
       nBytes = 2;
       break;
 
     case MEM_EMPTY:
       nBytes = 1;
+      org_needed = YES;
       break;
     }
 
@@ -418,16 +398,15 @@ void generate_listing() {
 }
 
 int main(int argc, char *argv[]) {
+  init_memory();
+
   parse_args(argc, argv);
    
-  init_memory();
-  if (read_file(rom_file, rom_start) == NO) {
-    fprintf(stderr, "Problem reading ROM file '%s'\n", rom_file);
+  /* if (read_file(src_file, prog_start) == NO) {
+    fprintf(stderr, "Problem reading source file '%s'\n", src_file);
     exit(1);
-  }
+    } */
 
-  /*create_ad_labels();*/
-  /*create_catbox_labels();*/
   read_label_file(label_file);
 
   pass1();

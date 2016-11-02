@@ -2,6 +2,7 @@
 #define _BDA_H_
 
 /* Processors */
+#define CPU_NONE -1
 #define CPU_6502 1
 #define CPU_6809 2
 

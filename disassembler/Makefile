@@ -21,7 +21,7 @@ bda: ${OBJ}
 	${LD} -o bda ${OBJ} ${LDFLAGS}
 
 proto: clean
-	cproto *.c >proto.h
+	cproto -e -v *.c >proto.h
 
 clean:
 	rm -f *.o *~ \#* bda

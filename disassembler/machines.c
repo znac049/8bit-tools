@@ -5,12 +5,28 @@
 
 #include "bda.h"
 
+int process_machine_file() {
+  CFGSection *sect = set_cfg_section("general");
+  CFGItem *item = find_cfg_item("cpu");
+
+  
+
+  return YES;
+}
+
 int read_machine_file(const char *machine_name) {
   char name[MAXSTR];
+  CFGSection *cfg;
 
   sprintf(name, "machines/%s.mach", machine_name);
 
-  return read_cfg_file(name);
+  cfg = read_cfg_file(name);
+
+  if (cfg != NULL) {
+    process_machine_file();
+  }
+
+  return YES;
 }
 
 void create_catbox_labels() {
