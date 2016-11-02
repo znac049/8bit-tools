@@ -111,6 +111,9 @@ void parse_args(int argc, char *argv[]) {
     }
   }
 
+  dump_cfg();
+  exit(1);
+
   /* There should be just one arg left, the name of the ROM file */
   if ((optind+1) != argc) {
     fprintf(stderr, "ROM file name missing.\n");

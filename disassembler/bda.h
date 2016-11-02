@@ -85,7 +85,7 @@ typedef struct OutputItem {
 
 typedef struct CFGItem {
   char *name;
-  char *line;
+  char *argstr;
   char **argv;
   int argc;
 
@@ -94,6 +94,7 @@ typedef struct CFGItem {
 
 typedef struct CFGSection {
   char *name;
+  CFGItem *items;
 
   struct CFGSection *next;
 } CFGSection;

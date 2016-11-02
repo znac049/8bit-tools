@@ -67,7 +67,7 @@ unsigned short parse_address(char *str) {
   return res;
 }
 
-unsigned char is_file(char *path) {
+unsigned char is_file(const char *path) {
   struct stat inf;
   int res = stat(path, &inf);
 

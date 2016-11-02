@@ -18,6 +18,13 @@ void emit_bytes(int *addr, unsigned char *stack, int *sp);
 void emit_words(int *addr, unsigned short *stack, int *sp);
 void generate_listing(void);
 int main(int argc, char *argv[]);
+/* config.c */
+CFGItem *parse_line(char *str);
+CFGSection *find_cfg_section(const char *section_name);
+void create_cfg_section(const char *section_name);
+CFGSection *set_cfg_section(const char *section_name);
+int read_cfg_file(const char *config_path);
+void dump_cfg(void);
 /* engine-6502.c */
 int disassemble_6502(int addr, OutputItem *res);
 /* engine-6809.c */
@@ -30,8 +37,7 @@ void create_label(char *label, unsigned short addr);
 void process_line(char *line);
 int read_label_file(const char *file_name);
 /* machines.c */
-CFGItem *parse_line(char *str);
-void read_machine_file(const char *machine_name);
+int read_machine_file(const char *machine_name);
 void create_catbox_labels(void);
 void create_ad_labels(void);
 /* memory.c */
@@ -49,7 +55,7 @@ int is_hex_char(char c);
 int hex_val(char c);
 unsigned short hex2int(char *str, unsigned short dfl);
 unsigned short parse_address(char *str);
-unsigned char is_file(char *path);
+unsigned char is_file(const char *path);
 char *trunc_str(char *s, char c);
 char *strip_nl(char *str);
 void ltrim(char *s);

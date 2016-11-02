@@ -1,4 +1,4 @@
-OBJ = address_stack.o bda.o engine-6502.o engine-6809.c labels.o machines.o memory.o utils.c
+OBJ = address_stack.o bda.o config.o engine-6502.o engine-6809.c labels.o machines.o memory.o utils.c
 
 CC = gcc
 LD = gcc

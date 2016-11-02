@@ -5,92 +5,12 @@
 
 #include "bda.h"
 
-CFGItem *parse_line(char *str) {
-  int argc = 0;
-  char *cp, *arg;
-  char *argv[MAXARGS];
-  CFGItem *item;
-  int i;
-
-  printf("PARSE: '%s'\n", str);
-  if (*str == EOS) {
-    return NULL;
-  }
-
-  str = strdup(str);
-  arg = cp = skip_blanks(str);
-
-  while (*arg != EOS) {
-    while (*cp && !(IS_WHITE(*cp))) {
-      cp++;
-    }
-    *cp++ = EOS;
-
-    argv[argc] = arg;
-    printf("ARGV[%d]: '%s'\n", argc, argv[argc]);
-
-    argc++;
-    arg = cp = skip_blanks(cp);
-  }
-
-  printf("ARGC=%d\n\n", argc);
-
-  item = malloc(sizeof(CFGItem));
-  item->next = NULL;
-  item->name = argv[0];
-  item->line = str;
-  item->argv = malloc(sizeof(char *) * (argc-1));
-
-  for (i=1; i<argc; i++) {
-    item->argv[i-1] = argv[i];
-  }
-  item->argc = argc-1;
-
-  return item;
-}
-
-void read_machine_file(const char *machine_name) {
+int read_machine_file(const char *machine_name) {
   char name[MAXSTR];
-  char line[MAXLINE];
-  FILE *fd;
-  char *str;
-  CFGItem *item;
 
   sprintf(name, "machines/%s.mach", machine_name);
-  if (!is_file(name)) {
-    fprintf(stderr, "No machine file found: '%s'\n", name);
-    exit(1);
-  }
 
-  fd = fopen(name, "r");
-  if (fd == NULL) {
-    fprintf(stderr, "No machine file found: '%s'\n", name);
-    exit(1);
-  }
-
-  /* Read the config file */
-
-  str = fgets(line, MAXSTR, fd);
-  while (str != NULL) {
-    int len;
-
-    strip_nl(str);
-    rtrim(str);
-
-    printf("READ: '%s'\n", str);
-    len = strlen(str);
-
-    if ((str[0] == '[') && (str[len-1] == ']')) {
-      printf("SECTION NAME: '%s'\n", str);
-    }
-    else {
-      item = parse_line(str);
-    }
-
-    str = fgets(line, MAXLINE, fd);
-  }
-
-  fclose(fd);
+  return read_cfg_file(name);
 }
 
 void create_catbox_labels() {
