@@ -12,8 +12,6 @@ static int tmplen = -1;
 void abortf(const char *fmt, ...)
 {
   va_list args;
-  int len = strlen(str);
-  char *cp = &str[len];
 
   va_start(args, fmt);
   vfprintf(stderr, fmt, args);

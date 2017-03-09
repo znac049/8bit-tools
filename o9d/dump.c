@@ -113,10 +113,10 @@ void dumpFD(const char *heading)
 
     setColour(i+5, 3, BRIGHTYELLOW);
     setColour(i+8, 2, YELLOW);
-
+    
     setColour(i+10, 3, BRIGHTCYAN);
     setColour(i+13, 2, CYAN);
-
+    
     setColour(i+15, 3, BRIGHTGREEN);
     setColour(i+18, 2, GREEN);
   }

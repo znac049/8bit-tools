@@ -105,7 +105,7 @@ void dumpFD(const char *heading);
 void dumpDirent();
 
 /* info.c */
-void allocInfoLines(int nLines);
+void allocInfoLines();
 void clearInfoLines();
 char *getInfoLine(int lineNum);
 void setInfoLine(int lineNum, const char *fmt, ...);

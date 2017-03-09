@@ -10,7 +10,7 @@
 #include "o9d.h"
 
 static int isTTY=0;
-static int *fgColours;
+colour_t *fgColours;
 static int rows;
 static int cols;
 
@@ -21,17 +21,23 @@ void initColourEngine()
 
   if (res == -1) {
     printf("ioctl() failed!\n");
-    return -1;
+
+    rows = cols = -1;
+    isTTY = 0;
   }
 
   rows = w.ws_row;
   cols = w.ws_col;
 
+  /*
   printf("console=%d X %d\n", rows, cols);
+  printf("sectorSize=%d\n", sectorSize);
+  printf("sizeof(colour_t)=%ld\n", sizeof(colour_t));
+  */
 
   isTTY = isatty(fileno(stdout));
 
-  fgColours = getvec(sectorSize * sizeof(colout_t));
+  fgColours = getvec(sectorSize * sizeof(colour_t));
 }
 
 const char *getColourString(colour_t colour)
@@ -42,8 +48,8 @@ const char *getColourString(colour_t colour)
 void setColour(int offset, int count, colour_t colour)
 {
   int i;
-
-  if ((offset < 0) || (offset+count > sectorSize)) {
+  
+  if ((offset < 0) || (offset+count >= sectorSize)) {
     return;
   }
 

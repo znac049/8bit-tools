@@ -35,11 +35,11 @@ void checkLSN(FILE *fd, long lsn)
 
   readLSNInto(fd, lsn, des);
   if (fdes->attribs & 0x80) {
-    printf("Directory! LSN%ld -> DIR\n", lsn);
+    // printf("Directory! LSN%ld -> DIR\n", lsn);
     sectorType[lsn] = DIR;
   }
   else {
-    printf("File.\n");
+    //printf("File.\n");
   }
 }
 
@@ -50,11 +50,11 @@ void trawlSeg(FILE *fd, seg_t *seg)
   int i;
   int entsPerSector = sectorSize / sizeof(dirent_t);
 
-  printf("Look at dirents in LSN%ld\n", decodeLSN(seg->lsn));
+  //printf("Look at dirents in LSN%ld\n", decodeLSN(seg->lsn));
 
   readLSNInto(fd, decodeLSN(seg->lsn), ents);
   for (i = 0; i < entsPerSector; i++) {
-    printf("DirENT %d: '%s' - @%ld\n", i, decodeFilename(ent->name), decodeLSN(ent->desLSN));
+    //printf("DirENT %d: '%s' - @%ld\n", i, decodeFilename(ent->name), decodeLSN(ent->desLSN));
     checkLSN(fd, decodeLSN(ent->desLSN));
 
     ent++;
@@ -70,7 +70,7 @@ void trawlDirectories(FILE *fd, long lsn)
 
   filedes_t *fdes = (filedes_t *)readLSN(fd, lsn);
 
-  printf("\n\nTrawling:\n");
+  // printf("\n\nTrawling:\n");
 
   // The attribs should identify us as a directory, otherwise
   // somethings badly wrong!

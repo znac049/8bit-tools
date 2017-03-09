@@ -310,5 +310,7 @@ int main(int argc, char **argv)
     usage("Only one trailing argument allowed.");
   }
 
-  doDump(argv[argc-1]);
+  filename = strdup(argv[argc-1]);
+
+  doDump();
 }
