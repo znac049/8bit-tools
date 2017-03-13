@@ -17,6 +17,7 @@
 #include "Converter.h"
 #include "MotoSREC.h"
 #include "IntelHex.h"
+#include "Dragon.h"
 #include "Raw.h"
 
 enum memoryType {

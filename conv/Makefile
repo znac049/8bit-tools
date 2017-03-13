@@ -1,6 +1,7 @@
 SRC = conv.cc \
 	Args.cc \
 	Converter.cc \
+	Dragon.cc \
 	IntelHex.cc \
 	Memory.cc \
 	MemoryCell.cc \

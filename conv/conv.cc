@@ -15,6 +15,9 @@ Converter *findConverter(const char *format) {
   else if (strcasecmp(format, "raw") == 0) {
     return new Raw();
   }
+  else if (strcasecmp(format, "dragon") == 0) {
+    return new Dragon();
+  }
 
   Utils::abortf("I don't know how to deal with format '%s'", format);
 
