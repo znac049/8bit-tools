@@ -61,6 +61,10 @@ int main(int argc, char *argv[]) {
     {NULL,            0,                                                NULL,           0  }
   };
 
+  if (args.hasArg("help")) {
+    Utils::abortf("Someone needs to write some help!\n");
+  }
+    
   try {
     args.parseArgs(mandatoryArgs, optionalArgs, false);
   }
@@ -68,6 +72,7 @@ int main(int argc, char *argv[]) {
     Utils::abortf("Trouble parsing command line.\n");
   }
 
+  verbose = true;
   numArgs = args.getArgC(Args::argument);
 
   if (numArgs != 0) {
