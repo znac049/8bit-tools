@@ -82,9 +82,86 @@ int IntelHex::convert(const char *str, int nChars) {
   return res;
 }
 
+int IntelHex::checksum(const char *line) {
+  int count;
+  int addr;
+  int recordType;
+
+  int xSum;
+  int i;
+
+  if (line[0] != ':') {
+    return -1;
+  }
+
+  count = convert(&line[1], 2);
+  addr = convert(&line[3], 4);
+  recordType = convert(&line[7], 2);
+
+  xSum = count + ((addr>>8) & 0xff) + (addr & 0xff) + recordType;
+  
+  for (i=0; i<count; i++) {
+    int b = convert(&line[(i*2)+9], 2);
+
+    printf("0x%02x ", b);
+    
+    xSum += b;
+  }
+  printf("\n");
+  
+  return (~xSum + 1) & 0xff;
+}
+
 int IntelHex::process(const char *line) {
   int len = strlen(line);
 
+  int count;
+  int addr;
+  int recordType;
+
+  int xSum;
+
+  int i;
+
+  if (line[0] != ':') {
+    return IHEX_BAD;
+  }
+
+  if ((line > 0) && (line[len-1] == '\n')) {
+    len--;
+  }
+  
+  if ((line > 0) && (line[len-1] == '\r')) {
+    len--;
+  }
+  
+  count = convert(&line[1], 2);
+  addr = convert(&line[3], 4);
+  recordType = convert(&line[7], 2);
+  xSum = convert(&line[len-2], 2);
+
+  printf("Line: '%s'\n", line);
+  printf("count=%d, addr=0x%04x, type=%d, xsum=0x%02x (%c%c)\n", count, addr, recordType, xSum, line[len-2], line[len-1]);
+  printf("calulated xsum=0x%02x\n", checksum(line));
+
+  switch (recordType) {
+  case 0:
+    for (i=0; i<count; i++) {
+      mem->setByte(addr++, convert(&line[(i*2)+9], 2));
+    }
+    break;
+
+  case 1:
+    return IHEX_OK;
+
+  case 2: case 3:
+  case 4: case 5:
+    return IHEX_UNIMPLEMENTED;
+
+  default:
+    return IHEX_UNKNOWNTYPE;
+  }
+  
   return IHEX_OK;
 }
 

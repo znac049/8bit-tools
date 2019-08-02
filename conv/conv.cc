@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   char toFormat[MAXSTR];
 
   long memSize = 1<<16; // Default memory space is 64k
-  bool verbose = false;
+  bool verbose = true;
 
   long relocateTo = -1;
   long startAddress = -1;
@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
     printf("Input file type: %s\n", cvIn->getName());
   }
 
+  cvIn->setVerbose(verbose);
   cvIn->setMemory(mem);
   cvIn->readIn(inFile);
   fclose(inFile);
@@ -108,6 +109,7 @@ int main(int argc, char *argv[]) {
     printf("Output file type: %s\n", cvOut->getName());
   }
 
+  cvOut->setVerbose(verbose);
   cvOut->setMemory(mem);
   cvOut->setRelocateTo(relocateTo);
   cvOut->setStartAddress(startAddress);

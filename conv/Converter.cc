@@ -24,14 +24,26 @@ void Converter::setMemory(Memory *memory) {
 }
 
 void Converter::setRelocateTo(long baseAddr) {
+  if (verbose) {
+    printf("relocate address=$%04x\n", baseAddr);
+  }
+
   relocateTo = baseAddr;
 }
 
 void Converter::setStartAddress(long addr) {
+  if (verbose) {
+    printf("start address=$%04x\n", addr);
+  }
+
   startAddress = addr;
 }
 
 void Converter::setEndAddress(long addr) {
+  if (verbose) {
+    printf("end address=$%04x\n", addr);
+  }
+
   endAddress = addr;
 }
 
@@ -55,3 +67,6 @@ long Converter::getEndAddress() {
   return addr;
 }
 
+void Converter::setVerbose(bool v) {
+  verbose = v;
+}

@@ -10,9 +10,14 @@ class IntelHex : public Converter {
  protected:
  public:
   const static int IHEX_OK = 0;
+  const static int IHEX_BAD = 1;
+  const static int IHEX_UNKNOWNTYPE = 2;
+  const static int IHEX_UNIMPLEMENTED = 3;
+  
 
  private:
   int convert(const char *str, int nChars);
+  int checksum(const char *line);
   int process(const char *line);
 
  protected:

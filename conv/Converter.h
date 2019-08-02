@@ -16,6 +16,8 @@ class Converter {
   long startAddress;
   long endAddress;
 
+  bool verbose;
+
  public:
 
  private:
@@ -37,6 +39,8 @@ class Converter {
 
   long getStartAddress();
   long getEndAddress();
+
+  void setVerbose(bool v);
 };
 
 #endif
