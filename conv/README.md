@@ -9,7 +9,7 @@ usage: conv [<args>]
 --to-format=[srec|ihex|raw]
 --start-address=
 --to-address=
---relocate-to
+--relocate-to=
 
 --verbose
 --help
