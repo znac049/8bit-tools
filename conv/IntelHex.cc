@@ -127,11 +127,11 @@ int IntelHex::process(const char *line) {
     return IHEX_BAD;
   }
 
-  if ((line > 0) && (line[len-1] == '\n')) {
+  if ((len > 0) && (line[len-1] == '\n')) {
     len--;
   }
   
-  if ((line > 0) && (line[len-1] == '\r')) {
+  if ((len > 0) && (line[len-1] == '\r')) {
     len--;
   }
   
