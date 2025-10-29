@@ -1,3 +1,7 @@
+.PHONY:	all dist-clean clean disks install
+
+DESTDIR=/home/bob/8bit
+
 SRC = conv.cc \
 	Args.cc \
 	Converter.cc \
@@ -27,15 +31,22 @@ DOCDIR = $(DESTDIR)/share/doc
 .cc.o: $(HDRS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-.PHONY:	all clean
+all: $(EXE) zob
 
-all: $(EXE)
+install: all
+	install conv $(BINDIR)
 
 $(EXE): ${OBJ}
 	${LD} -o $(EXE) ${OBJ} ${LDFLAGS}
+
+zob: zob.cc
+	$(CC) $(CFLAGS) -o $@ $<
 
 proto: clean
 	cproto *.c >proto.h
 
 clean:
 	rm -f *.o *~ \#* $(EXE)
+
+dist-clean: clean
+	rm -f *.img proto.h

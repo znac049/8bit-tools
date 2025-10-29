@@ -2,127 +2,171 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <getopt.h>
 
 #include "conv.h"
 
+#define no_argument 0
+#define required_argument 1 
+#define optional_argument 2
+
 Converter *findConverter(const char *format) {
-  if (strcasecmp(format, "srec") == 0) {
-    return new MotoSREC();
-  }
-  else if (strcasecmp(format, "ihex") == 0) {
-    return new IntelHex();
-  }
-  else if (strcasecmp(format, "raw") == 0) {
-    return new Raw();
-  }
-  else if (strcasecmp(format, "dragon") == 0) {
-    return new Dragon();
-  }
+    if (strcasecmp(format, "srec") == 0) {
+        return new MotoSREC();
+    }
+    else if (strcasecmp(format, "ihex") == 0) {
+        return new IntelHex();
+    }
+    else if (strcasecmp(format, "raw") == 0) {
+        return new Raw();
+    }
+    else if (strcasecmp(format, "dragon") == 0) {
+        return new Dragon();
+    }
 
-  Utils::abortf("I don't know how to deal with format '%s'", format);
+    Utils::abortf("I don't know how to deal with format '%s'", format);
 
-  return NULL;
+    return NULL;
 }
 
 int main(int argc, char *argv[]) {
-  Args args(argc, argv);
+    char inputName[MAXSTR];
+    char outputName[MAXSTR];
+    char fromFormat[MAXSTR];
+    char toFormat[MAXSTR];
 
-  char inputName[MAXSTR];
-  char outputName[MAXSTR];
-  char fromFormat[MAXSTR];
-  char toFormat[MAXSTR];
+    long memSize = 1<<16; // Default memory space is 64k
+    bool verbose = false;
 
-  long memSize = 1<<16; // Default memory space is 64k
-  bool verbose = true;
+    long relocateTo = -1;
+    long startAddress = -1;
+    long endAddress = -1;
 
-  long relocateTo = -1;
-  long startAddress = -1;
-  long endAddress = -1;
+    int index;
+    int iarg=0;
 
-  Memory *mem;
-  Converter *cvIn, *cvOut;
-  FILE *inFile, *outFile;
+    Memory *mem;
+    Converter *cvIn, *cvOut;
+    FILE *inFile, *outFile;
 
-  int numArgs;
-  option_t *arg;
-  
-  parseopt_t mandatoryArgs[] = {
-    {"input-file",  Args::requires_argument, inputName,  'i'},
-    {"output-file", Args::requires_argument, outputName, 'o'},
-    {"from-format", Args::requires_argument, fromFormat, 'f'},
-    {"to-format",   Args::requires_argument, toFormat,   't'},
-    {NULL,          0,                       NULL,      0}
-  }; 
- 
-  parseopt_t optionalArgs[] = {
-    {"memory-size",   Args::requires_argument | Args::numeric_argument, &memSize,       's'},
-    {"relocate-to",   Args::requires_argument | Args::numeric_argument, &relocateTo,    'r'},
-    {"start-address", Args::requires_argument | Args::numeric_argument, &startAddress,  'r'},
-    {"end-address",   Args::requires_argument | Args::numeric_argument, &endAddress,  'r'},
-    {"help",          0,                                                &verbose,       '?'},
-    {"verbose",       0,                                                NULL,           'v'},
-    {NULL,            0,                                                NULL,           0  }
-  };
+      const struct option longopts[] =
+    {
+        {"input-file",    required_argument, 0, 'i'},
+        {"output-file",   required_argument, 0, 'o'},
+        {"from-format",   required_argument, 0, 'f'},
+        {"to-format",     required_argument, 0, 't'},
+        {"memory-size",   required_argument, 0, 's'},
+        {"relocate-to",   required_argument, 0, 'r'},
+        {"start-address", required_argument, 0, 'S'},
+        {"end-address",   required_argument, 0, 'E'},
+        {"verbose",       no_argument,       0, 'v'},
+        {0,0,0,0},
+    };
 
-  if (args.hasArg("help")) {
-    Utils::abortf("Someone needs to write some help!\n");
-  }
-    
-  try {
-    args.parseArgs(mandatoryArgs, optionalArgs, false);
-  }
-  catch (exception e) {
-    Utils::abortf("Trouble parsing command line.\n");
-  }
+    //turn off getopt error message
+    opterr=1; 
 
-  verbose = true;
-  numArgs = args.getArgC(Args::argument);
+    strcpy(inputName, "");
+    strcpy(outputName, "");
+    strcpy(fromFormat, "");
+    strcpy(toFormat, "");
 
-  if (numArgs != 0) {
-    Utils::abortf("No trailing arguments expected.\n");
-  }
+    while((iarg = getopt_long(argc, argv, "i:o:f:t:s:r:S:E:v", longopts, &index)) != -1)
+    {
+        switch (iarg)
+        {
+            case 'i':
+                strcpy(inputName, optarg);
+                break;
+                
+            case 'o':
+                strcpy(outputName, optarg);
+                break;
+                
+            case 'f':
+                strcpy(fromFormat, optarg);
+                break;
+                
+            case 't':
+                strcpy(toFormat, optarg);
+                break;
+                
+            case 's':
+                memSize = Utils::parseAddress(optarg);
+                break;
+                
+            case 'r':
+                relocateTo = Utils::parseAddress(optarg);
+                break;
+                
+            case 'S':
+                startAddress = Utils::parseAddress(optarg);
+                break;
 
-  inFile = fopen(inputName, "r");
-  if (inFile == NULL) {
-    Utils::abortf("Couldn't open '%s' - check it exists and is readable.", inputName);
-  }
+            case 'E':
+                endAddress = Utils::parseAddress(optarg);
+                break;
 
-  outFile = fopen(outputName, "w");
-  if (outFile == NULL) {
-    Utils::abortf("Couldn't create '%s' - check you have permission.", outputName);
-  }
+            case 'v':
+                verbose = true;
+                break;
 
-  mem = new Memory(memSize);
-  mem->setPadChar(0x5a);
+            default:
+                printf("WTF!\n");
+                break;
+        }
+    }
 
-  cvIn = findConverter(fromFormat);
-  if (verbose) {
-    printf("Input file type: %s\n", cvIn->getName());
-  }
 
-  cvIn->setVerbose(verbose);
-  cvIn->setMemory(mem);
-  cvIn->readIn(inFile);
-  fclose(inFile);
+    inFile = fopen(inputName, "r");
+    if (inFile == NULL) {
+        Utils::abortf("Couldn't open '%s' - check it exists and is readable.", inputName);
+    }
 
-  if (verbose) {
-    mem->info();
-  }
+    outFile = fopen(outputName, "w");
+    if (outFile == NULL) {
+        Utils::abortf("Couldn't create '%s' - check you have permission.", outputName);
+    }
 
-  cvOut = findConverter(toFormat);
-  if (verbose) {
-    printf("Output file type: %s\n", cvOut->getName());
-  }
+    mem = new Memory(memSize);
+    mem->setPadChar(0x5a);
 
-  cvOut->setVerbose(verbose);
-  cvOut->setMemory(mem);
-  cvOut->setRelocateTo(relocateTo);
-  cvOut->setStartAddress(startAddress);
-  cvOut->setEndAddress(endAddress);
-  cvOut->writeOut(outFile);
-  fclose(outFile);
+    cvIn = findConverter(fromFormat);
+    if (verbose) {
+        printf("Input file type: %s\n", cvIn->getName());
+    }
 
-  //mem->dump();
+    cvIn->setVerbose(verbose);
+    cvIn->setMemory(mem);
+    cvIn->readIn(inFile);
+    fclose(inFile);
 
-  return 0;
+    if (startAddress == -1) {
+        startAddress = mem->getLowestAddress();
+    }
+
+    if (endAddress == -1) {
+        endAddress = mem->getHighestAddress();
+    }
+
+    if (verbose) {
+        mem->info();
+    }
+
+    cvOut = findConverter(toFormat);
+    if (verbose) {
+        printf("Output file type: %s\n", cvOut->getName());
+    }
+
+    cvOut->setVerbose(verbose);
+    cvOut->setMemory(mem);
+    cvOut->setRelocateTo(relocateTo);
+    cvOut->setStartAddress(startAddress);
+    cvOut->setEndAddress(endAddress);
+    cvOut->writeOut(outFile);
+    fclose(outFile);
+
+    //mem->dump();
+
+    return 0;
 }

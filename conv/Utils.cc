@@ -56,24 +56,30 @@ long Utils::hex2int(char *str) {
 }
 
 long Utils::parseAddress(char *str) {
-  long res;
+    long res;
 
-  try {
-    if ((strncmp(str, "0x", 2) == 0) || (strncmp(str, "0X", 2) == 0)) {
-      res = hex2int(&str[2]);
+    if (str == NULL) {
+        return -1;
     }
-    else if (strncmp(str, "$", 1) == 0) {
-      res = hex2int(&str[1]);
-    }
-    else {
-      res = atol(str);
-    }
-  }
-  catch (ConversionException e) {
-    res = -1;
-  }
 
-  return res;
+    printf("parseAddress('%s')\n", str);
+    try {
+        if ((strncmp(str, "0x", 2) == 0) || (strncmp(str, "0X", 2) == 0)) {
+            res = hex2int(&str[2]);
+        }
+        else if (strncmp(str, "$", 1) == 0) {
+            res = hex2int(&str[1]);
+        }
+        else {
+            res = atol(str);
+        }
+    }
+    catch (ConversionException e) {
+        res = -1;
+    }
+
+    printf("  -> %ld (0x%08x)\n", res, res);
+    return res;
 }
 
 bool Utils::isFile(const char *path) {

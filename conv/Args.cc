@@ -34,19 +34,19 @@ Args::Args(int argc, char **argv) {
       eq = strchr(arg, '=');
       
       if (eq) {
-	*eq++ = EOS;
-	opt->valStr = strdup(eq);
+	      *eq++ = EOS;
+	      opt->valStr = strdup(eq);
       }
       else {
-	opt->valStr = NULL;
+	      opt->valStr = NULL;
       }
 
       if (strncmp(arg, "--no-", 5) == 0) {
-	opt->option = strdup(&arg[5]);
-	flags |= inverted;
+        opt->option = strdup(&arg[5]);
+        flags |= inverted;
       }
       else {
-	opt->option = strdup(&arg[2]);
+      	opt->option = strdup(&arg[2]);
       }
       opt->optType = long_switch;
       opt->flags = flags;
@@ -62,16 +62,16 @@ Args::Args(int argc, char **argv) {
       tmp[1] = EOS;
 
       for (int j=1; j<len; j++) {
-	tmp[0] = argv[i][j];
+        tmp[0] = argv[i][j];
 
-	opt = new option_t();
+        opt = new option_t();
 
-	opt->option = strdup(tmp);
-	opt->valStr = NULL;
-	opt->optType = short_switch;
-	opt->flags = 0;
+        opt->option = strdup(tmp);
+        opt->valStr = NULL;
+        opt->optType = short_switch;
+        opt->flags = 0;
 
-	options.push_back(opt);
+        options.push_back(opt);
       }
     }
     else {
@@ -157,7 +157,7 @@ void Args::pairShortArg(char argCh, bool required) {
 
     if (arg->optType == long_switch) {
       if (required) {
-	throw CommandLineException();
+	      throw CommandLineException();
       }
 
       return;
@@ -185,7 +185,7 @@ void Args::pairShortArgs(const char *shortArgStr) {
       pairShortArg(*cp, required);
 
       if (!required) {
-	cp++;
+	      cp++;
       }
       cp++;
     }
@@ -269,43 +269,43 @@ void Args::processArgs(parseopt_t *opts) {
 
       // Do we treat the argument as a string, nunber or flag/boolean?
       if (opt->flags & numeric_argument) {
-	long *dest = (long *)opt->target;
-	//printf("Numeric\n");
+        long *dest = (long *)opt->target;
+        //printf("Numeric\n");
 
-	if (dest != NULL) {
-	  *dest = Utils::parseAddress(arg->valStr);
-	}
+        if (dest != NULL) {
+          *dest = Utils::parseAddress(arg->valStr);
+        }
       }
       else if (opt->flags & boolean_argument) {
-	bool res = false;
-	bool *dest = (bool *)opt->target;
+        bool res = false;
+        bool *dest = (bool *)opt->target;
 
-	//printf("Boolean\n");
-	if (arg->valStr == NULL) {
-	  res = (arg->flags & inverted)?false:true;
-	}
-	else {
-	  if ( (strcasecmp(arg->valStr, "yes") == 0) || 
-	       (strcasecmp(arg->valStr, "true") == 0) ||
-	       (strcasecmp(arg->valStr, "1") == 0) ) {
-	    res = true;
-	  }
+        //printf("Boolean\n");
+        if (arg->valStr == NULL) {
+          res = (arg->flags & inverted)?false:true;
+        }
+        else {
+          if ( (strcasecmp(arg->valStr, "yes") == 0) || 
+              (strcasecmp(arg->valStr, "true") == 0) ||
+              (strcasecmp(arg->valStr, "1") == 0) ) {
+            res = true;
+          }
 
-	  if (arg->flags & inverted) {
-	    res = !res;
-	  }
-	}
+          if (arg->flags & inverted) {
+	          res = !res;
+	        }
+	      }
 
-	if (dest != NULL) {
-	  *dest= res;
-	}
+	      if (dest != NULL) {
+	        *dest= res;
+	      }
       }
       else {
-	//printf("String '%s'\n", arg->valStr);
-	if (opt->target != NULL) {
-	  char *cp = (char *)opt->target;
-	  strcpy(cp, arg->valStr);
-	}
+        //printf("String '%s'\n", arg->valStr);
+        if (opt->target != NULL) {
+          char *cp = (char *)opt->target;
+          strcpy(cp, arg->valStr);
+        }
       }
     }
 
@@ -333,7 +333,7 @@ void Args::parseArgs(parseopt_t *mandatory, parseopt_t *optional, bool fussy) {
       optInd = argIndex(opt->shortOpt);
 
       if (optInd == -1) {
-	throw CommandLineException();
+	      throw CommandLineException();
       }
     }
 
@@ -385,8 +385,8 @@ option_t *Args::getArg(int argNum, int argType) {
       hits++;
 
       if (hits == argNum) {
-	printf("Found at %d\n", i);
-	return options.at(i);
+        printf("Found at %d\n", i);
+        return options.at(i);
       }
     }
   }

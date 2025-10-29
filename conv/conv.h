@@ -9,7 +9,6 @@
 #define CONTINUE_CHAR '\\'
 #define EOS '\0'
 
-#include "Args.h"
 #include "Exceptions.h"
 #include "MemoryCell.h"
 #include "Memory.h"
