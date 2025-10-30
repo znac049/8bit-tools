@@ -30,7 +30,7 @@ DOCDIR = $(DESTDIR)/share/doc
 .cc.o: $(HDRS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all: $(EXE) zob
+all: $(EXE)
 
 install: all
 	install conv $(BINDIR)
