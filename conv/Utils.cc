@@ -62,7 +62,7 @@ long Utils::parseAddress(char *str) {
         return -1;
     }
 
-    printf("parseAddress('%s')\n", str);
+    // printf("parseAddress('%s')\n", str);
     try {
         if ((strncmp(str, "0x", 2) == 0) || (strncmp(str, "0X", 2) == 0)) {
             res = hex2int(&str[2]);
@@ -78,7 +78,7 @@ long Utils::parseAddress(char *str) {
         res = -1;
     }
 
-    printf("  -> %ld (0x%08x)\n", res, res);
+    // printf("  -> %ld (0x%08x)\n", res, res);
     return res;
 }
 

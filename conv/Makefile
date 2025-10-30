@@ -3,7 +3,6 @@
 DESTDIR=/home/bob/8bit
 
 SRC = conv.cc \
-	Args.cc \
 	Converter.cc \
 	Dragon.cc \
 	IntelHex.cc \
@@ -38,9 +37,6 @@ install: all
 
 $(EXE): ${OBJ}
 	${LD} -o $(EXE) ${OBJ} ${LDFLAGS}
-
-zob: zob.cc
-	$(CC) $(CFLAGS) -o $@ $<
 
 proto: clean
 	cproto *.c >proto.h

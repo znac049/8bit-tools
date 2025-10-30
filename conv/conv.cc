@@ -117,6 +117,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    if ((strcmp(inputName, "") == 0) || (strcmp(outputName, "") == 0) ||
+        (strcmp(fromFormat, "") == 0) || (strcmp(toFormat, "") == 0)) {
+            Utils::abortf("Some required command arguments are missing.");
+    }
 
     inFile = fopen(inputName, "r");
     if (inFile == NULL) {
