@@ -30,7 +30,7 @@ char *filename = NULL;
 
 byte *sectorBuffer;
 sector_type_t *sectorType;
-colour_t *fgColours;
+// colour_t *fgColours;
 
 long totalSectors = 1;
 word sectorsPerTrack = 1;

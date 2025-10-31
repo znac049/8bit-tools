@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <malloc.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "o9d.h"
 
